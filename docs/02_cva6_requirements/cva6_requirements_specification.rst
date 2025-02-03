@@ -1,6 +1,7 @@
 ===============================
 CVA6 Requirement Specification
 ===============================
+Editor: **Jerome Quevremont**
 
 Revision 1.0.1
 
@@ -137,32 +138,35 @@ The CVA6 is highly configurable via SystemVerilog parameters.
 It is not practical to fully document and verify all possible combinations of parameters, so a set of "viable IP configurations" has been defined.
 The full list of parameters for this configuration will be detailed in the users’ guide.
 
-Below is the configuration of the first release of the CVA6.
+Below are the configuration of the first releases of the CVA6.
 
 +--------------------+---------+---------+------+-------+---------+---------+---------+---------+
 | Release ID         | Target  | ISA     | XLEN | FPU   | CV-X-IF | MMU     | L1 D$   | L1 I$   |
 +====================+=========+=========+======+=======+=========+=========+=========+=========+
-| CV32A60X           | ASIC    | IMC     |  32  | No    | Yes     | Sv32    | None    | 16 kB   |
+| ``CV32A60X``       | ASIC    | IMC     |  32  | No    | Yes     | None    | 2 kB    | 2 kB    |
++--------------------+---------+---------+------+-------+---------+---------+---------+---------+
+| ``CV32A60AX``      | ASIC    | IMC     |  32  | No    | Yes     | Sv32    | 16kB    | 16 kB   |
 +--------------------+---------+---------+------+-------+---------+---------+---------+---------+
 
+CV32A60X could evolve to CV32A65X if the team decides to integrate the dual-issue optional architectural feature.
 
-Possible Future Releases
-------------------------
-
-Below is a proposed list of configurations that could undergo verification and their main parameters.
-The full list of parameters for these configurations will be detailed in the users’ guide if and when these configurations are fully verified.
-
-+--------------------+---------+--------+------+-------+---------+---------+---------+---------+
-| Configuation ID    | Target  | ISA    | XLEN | FPU   | CV-X-IF | MMU     | L1 D$   | L1 I$   |
-+====================+=========+========+======+=======+=========+=========+=========+=========+
-| cv32a6_imacf_sv32  | FPGA    | IMACF  |  32  | Yes   | TBD     | Sv32    | 32 kB   | 16 kB   |
-+--------------------+---------+--------+------+-------+---------+---------+---------+---------+
-| cv32a6_imac_sv32   | FPGA    | IMAC   |  32  | No    | TBD     | Sv32    | 32 kB   | 16 kB   |
-+--------------------+---------+--------+------+-------+---------+---------+---------+---------+
-| cv64a6_imacfd_sv39 | ASIC    | IMACFD |  64  | Yes   | Yes     | Sv39    | 16 kB   | 16 kB   |
-+--------------------+---------+--------+------+-------+---------+---------+---------+---------+
-| cv32a6_imac_sv0    | ASIC    | IMAC   |  32  | No    | Yes     | None    | None    | 4 kB    |
-+--------------------+---------+--------+------+-------+---------+---------+---------+---------+
+.. Possible Future Releases
+.. ------------------------
+..
+.. Below is a proposed list of configurations that could undergo verification and their main parameters.
+.. The full list of parameters for these configurations will be detailed in the users’ guide if and when these configurations are fully verified.
+..
+.. +--------------------+---------+--------+------+-------+---------+---------+---------+---------+
+.. | Configuation ID    | Target  | ISA    | XLEN | FPU   | CV-X-IF | MMU     | L1 D$   | L1 I$   |
+.. +====================+=========+========+======+=======+=========+=========+=========+=========+
+.. | cv32a6_imacf_sv32  | FPGA    | IMACF  |  32  | Yes   | TBD     | Sv32    | 32 kB   | 16 kB   |
+.. +--------------------+---------+--------+------+-------+---------+---------+---------+---------+
+.. | cv32a6_imac_sv32   | FPGA    | IMAC   |  32  | No    | TBD     | Sv32    | 32 kB   | 16 kB   |
+.. +--------------------+---------+--------+------+-------+---------+---------+---------+---------+
+.. | cv64a6_imacfd_sv39 | ASIC    | IMACFD |  64  | Yes   | Yes     | Sv39    | 16 kB   | 16 kB   |
+.. +--------------------+---------+--------+------+-------+---------+---------+---------+---------+
+.. | cv32a6_imac_sv0    | ASIC    | IMAC   |  32  | No    | Yes     | None    | None    | 4 kB    |
+.. +--------------------+---------+--------+------+-------+---------+---------+---------+---------+
 
 .. _references:
 
@@ -190,14 +194,17 @@ Asanović and John Hauser, RISC-V Foundation, December 4, 2021.
 [RVdbg] “RISC-V External Debug Support, Document Version 0.13.2”,
 Editors Tim Newsome and Megan Wachs, RISC-V Foundation, March 22, 2019.
 
+[RVZc] “RISC-V Zc* Code Size Reduction v1.0",
+Editor Tariq Kurd, Codasip, April, 2023.
+https://wiki.riscv.org/display/HOME/Recently+Ratified+Extensions
+
 [RVcompat] “RISC-V Architectural Compatibility Test Framework”,
 https://github.com/riscv-non-isa/riscv-arch-test.
 
 [AXI] AXI Specification,
 https://developer.arm.com/documentation/ihi0022/hc.
 
-[CV-X-IF] Placeholder for the CV-X-IF coprocessor interface currently
-prepared at OpenHW Group; current version in
+[CV-X-IF] “OpenHW Group Specification: Core-V eXtension interface (CV-X-IF)”, version 1.0.0,
 https://docs.openhwgroup.org/projects/openhw-group-core-v-xif/.
 
 [OpenPiton] “OpenPiton Microarchitecture Specification”, Princeton
@@ -295,22 +302,30 @@ independent requirements.
 |                                   | **Zifencei** extension, version   |
 |                                   | 2.0.                              |
 +-----------------------------------+-----------------------------------+
-| ISA‑110                           | | As an **option**, the duration  |
-|                                   |   of instructions shall be        |
-|                                   |   independent from the operand    |
-|                                   |   values.                         |
-|                                   | | *Unlike other options, this one |
-|                                   |   can be design-time (selected    |
-|                                   |   before compiling the RTL) or    |
-|                                   |   run-time (selected through a    |
-|                                   |   register).*                     |
+| ISA-120                           | CVA6 should support as an         |
+|                                   | **option** the **B** extension    |
+|                                   | (bit manipulation), version 1.0.  |
+|                                   | The **B** extension comprises the |
+|                                   | **Zba**, **Zbb**, **Zbc**         |
+|                                   | and **Zbs** extensions.           |
 +-----------------------------------+-----------------------------------+
+| ISA-130                           | CVA6 should support as an         |
+|                                   | **option** the **Zicond**         |
+|                                   | extension(ratification pending)   |
+|                                   | version 1.0.                      |
++-----------------------------------+-----------------------------------+
+| ISA-140                           | CVA6 should support as an         |
+|                                   | **option** the **Zcb**            |
+|                                   | extension version 1.0.            |
++-----------------------------------+-----------------------------------+
+| ISA-150                           | CVA6 should support as an         |
+|                                   | **option** the **Zcmp**           |
+|                                   | extension version 1.0.            |
++-----------------------------------+-----------------------------------+
+
 
 Note to ISA-60 and ISA-70: CV64A6 cannot support the D extension with
 the F extension.
-
-Note to ISA-110: In the current design, the duration of the division
-is data-dependent, which can be a security issue.
 
 .. _privileges_and_virtual_memory:
 
@@ -600,15 +615,15 @@ work. If a RISC-V specification is ratified, the CVA6 specification will
 likely switch to it.
 
 +-----------------------------------+-----------------------------------+
-| FET‑10                            | CVA6 shall support the            |
+| FET‑10                            | CVA6 should support the           |
 |                                   | ``FENCE.T`` instruction that      |
 |                                   | ensures that the execution time   |
 |                                   | of subsequent instructions is     |
 |                                   | unrelated with predecessor        |
 |                                   | instructions.                     |
 +-----------------------------------+-----------------------------------+
-| FET‑20                            | ``FENCE.T`` shall be available in |
-|                                   | all privilege modes (machine,     |
+| FET‑20                            | ``FENCE.T`` should be available   |
+|                                   | in all privilege modes (machine,  |
 |                                   | supervisor, user and hypervisor   |
 |                                   | if present).                      |
 +-----------------------------------+-----------------------------------+
@@ -622,11 +637,6 @@ It is not yet decided if the ``FENCE.T`` instruction arguments can be
 used to select a subset of microarchitecture features that will be
 cleared. The list of arguments, if any, will be detailed in the user’s
 guide.
-
-Anticipation of verification: It can be cumbersome to prove the timing
-decorrelation as expressed in the requirement with digital simulations.
-We can simulate the microarchitecture features and explain how they
-satisfy the requirement as Nils Wistoff’s work demonstrated.
 
 .. _ppa_targets:
 
@@ -737,13 +747,6 @@ Coprocessor interface
 |                                   | and “Result” interfaces of the    |
 |                                   | [CV-X-IF] specification.          |
 +-----------------------------------+-----------------------------------+
-
-The goal is to have a compatible interface between CORE-V cores (CVA6,
-CV32E40X…). The feasibility still needs to be confirmed; including the
-speculative execution.
-
-CVA6 can interface with several coprocessors simultaneously through a
-specific external feature implemented on the CV-X-IF interface.
 
 .. _multi_core_interface:
 

@@ -1,3 +1,7 @@
+// Copyright OpenHW Group contributors.
+// Licensed under the Apache License, Version 2.0, see LICENSE for details.
+// SPDX-License-Identifier: Apache-2.0
+
 #include "uart.h"
 
 void write_reg_u8(uintptr_t addr, uint8_t value)
@@ -16,11 +20,38 @@ int is_transmit_empty()
     return read_reg_u8(UART_LINE_STATUS) & 0x20;
 }
 
+char is_transmit_empty_altera()
+{
+    return read_reg_u8(UART_THR+6);
+}
+
+int is_receive_empty()
+{
+    #ifndef PLAT_AGILEX
+        return !(read_reg_u8(UART_LINE_STATUS) & 0x1);
+    #else
+        return !(read_reg_u8(UART_THR+1) & 0x8);
+    #endif
+}
+
 void write_serial(char a)
 {
-    while (is_transmit_empty() == 0) {};
-
+    #ifndef PLAT_AGILEX
+        while (is_transmit_empty() == 0) {};
+    #else
+        while (is_transmit_empty_altera() < 8) {};
+    #endif
     write_reg_u8(UART_THR, a);
+}
+
+int read_serial(uint8_t *res)
+{
+    if(is_receive_empty()) {
+        return 0;
+    }
+
+    *res = read_reg_u8(UART_RBR);
+    return 1;
 }
 
 void init_uart(uint32_t freq, uint32_t baud)

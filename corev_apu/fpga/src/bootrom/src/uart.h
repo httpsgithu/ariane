@@ -1,3 +1,7 @@
+// Copyright OpenHW Group contributors.
+// Licensed under the Apache License, Version 2.0, see LICENSE for details.
+// SPDX-License-Identifier: Apache-2.0
+
 #pragma once
 
 #include <stdint.h>
@@ -17,6 +21,8 @@
 #define UART_DLAB_MSB UART_BASE + 4
 
 void init_uart();
+
+int read_serial(uint8_t *res);
 
 void print_uart(const char* str);
 
